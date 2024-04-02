@@ -4,11 +4,10 @@
 #The original script was written in Python 2. It computes the strong
 # connected components(SCC) of a given graph.
 
-# Code sourced from Dr Hu's lecture notes
-
 import sys
 import time
 import heapq
+import networkx as nx
 #import resource
 from itertools import groupby
 from collections import defaultdict
@@ -73,6 +72,8 @@ def scc(graph):
     then runs dfs_loop on original graph with nodes in decreasing finish
     time order(obtained from first run). Return a dict of {leader: SCC}."""
 
+    graph = convert_nx_to_dict(graph)
+
     out = defaultdict(list)
     tracker1 = Tracker()
     tracker2 = Tracker()
@@ -89,37 +90,9 @@ def scc(graph):
     for lead, vertex in groupby(sorted(tracker2.leader, key=tracker2.leader.get),
                                 key=tracker2.leader.get):
         out[lead] = list(vertex)
-    return out
+    #return out
 
-
-def main():
-    start = time.time()
-    '''    graph = defaultdict(list)
-    with open('SCC.txt') as file_in:
-    #with open('test.txt') as file_in:
-        for line in file_in:
-            x = line.strip().split()
-            x1, x2 = int(x[0]), int(x[1])
-            graph[x1].append(x2)'''
-    graph = {
-         'A': set(['B']),
-         'B': set(['D', 'C', 'E']),
-         'C': set(['F']),
-         'D': set(),
-         'E': set(['B', 'F', 'G']),
-         'F': set(['C','H']),
-         'G': set(['H', 'J']),
-         'H': set(['K']),
-         'I': set('G'),
-         'J': set(['I']),
-         'K': set(['L']),
-         'L': set(['J'])
-            }
-    t1 = time.time() - start
-    print (t1)
-    groups = scc(graph)
-    t2 = time.time() - start
-    print (round(t2,4))
+    groups = out
     top_5 = heapq.nlargest(5, groups, key=lambda x: len(groups[x]))
     #sorted_groups = sorted(groups, key=lambda x: len(groups[x]), reverse=True)
     result = []
@@ -131,3 +104,8 @@ def main():
             result.append(0)
     return result, groups
 
+def convert_nx_to_dict(graph):
+    graph_dict = defaultdict(list)
+    for edge in graph.edges():
+        graph_dict[edge[0]].append(edge[1])
+    return graph_dict

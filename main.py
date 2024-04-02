@@ -113,16 +113,15 @@ def main():
     graph.add_edge(11, 12)
 
     # Finding the strongly connected components in the directed graph
-    groups = scc.scc(graph)
+    count, components = scc.scc(graph)
     print("Strongly connected components found:")
-    for component in groups:
-        print(component)
-    # !!! Need to fix scc.py to use networkx graph instead of dict
+    for key in components:
+        print(components[key])
+    print("Number of nodes in each group:", count)
         
-    # Create meta graph of strongly connected components
-        
-    # Create a directed acyclic graph from the meta graph
-        
+    # Creating a meta graph of strongly connected components
+    
+    
     # Linearize the directed acyclic graph
         
     # Creating a weighted directed graph

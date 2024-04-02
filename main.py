@@ -66,24 +66,25 @@ def main():
     graph.add_edge(K, L)
     graph.add_edge(K, O)
     graph.add_edge(L, P)
+    print("Undirected graph created:")
 
     # Using DFS to find all connected components in the graph
     DFScc = dfs_connected_components(graph)
-    print("Connected components found using DFS:")
+    print("\nConnected components found using DFS:")
     for component in DFScc:
         print(component)
     print("Number of connected components found using DFS:", len(DFScc))
 
     # Using BFS to find all connected components in the graph
     BFScc = bfs_connected_components(graph)
-    print("Connected components found using BFS:")
+    print("\nConnected components found using BFS:")
     for component in BFScc:
         print(component)
     print("Number of connected components found using BFS:", len(BFScc))
 
     # Using DFS to find the shortest path between two nodes in the graph
     DFSpath = algos.dfs_path(graph, A, F)
-    print("Shortest path found using DFS:", DFSpath)
+    print("\nShortest path found using DFS:", DFSpath)
 
     # Using BFS to find the shortest path between two nodes in the graph
     BFSpath = algos.bfs_path(graph, A, F)
@@ -111,18 +112,26 @@ def main():
     graph.add_edge(10, 9)
     graph.add_edge(10, 11)
     graph.add_edge(11, 12)
+    print("\nDirected graph created:")
 
     # Finding the strongly connected components in the directed graph
     count, components = scc.scc(graph)
-    print("Strongly connected components found:")
+    print("\nStrongly connected components found:")
     for key in components:
         print(components[key])
     print("Number of nodes in each group:", count)
         
     # Creating a meta graph of strongly connected components
-    
+    meta_graph, scc_map = create_meta_graph(graph, components)
+    print("\nNodes representing each strongly connected component:")
+    print(scc_map)
+    print("Meta graph of strongly connected components:")
+    print(meta_graph.edges())
     
     # Linearize the directed acyclic graph
+    linearized = algos.dfs_tpl_order(meta_graph, 4, [])
+    print("\nLinearized directed acyclic graph:")
+    print(linearized)
         
     # Creating a weighted directed graph
         
@@ -159,5 +168,21 @@ def bfs_connected_components(graph):
         # Remove the vertices in the connected component from the set of vertices
         vertices -= component
     return connected_components
+
+def create_meta_graph(graph, components):
+    meta_graph = nx.DiGraph()
+    component_map = {node: i for i, component in components.items() for node in component}
+    scc_map = {i: list(component) for i, component in components.items()}
+
+    for node in component_map:
+        meta_graph.add_node(component_map[node])
+
+    for edge in graph.edges():
+        source_component = component_map[edge[0]]
+        target_component = component_map[edge[1]]
+        if source_component != target_component:
+            meta_graph.add_edge(source_component, target_component)
+
+    return meta_graph, scc_map
 
 main()

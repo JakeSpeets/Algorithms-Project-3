@@ -1,9 +1,13 @@
-# This file contains the implementation of the graph algorithms mentioned in main.py
+# This file contains the implementation of the graph algorithms called in main.py
 
 import networkx as nx
 
 
 def dfs(graph, start, visited=None):
+    """
+    Implements a recursive depth-first search
+    Sourced from Dr. Hu's lecture notes
+    """
     if visited is None:
         visited = set()
     visited.add(start)
@@ -13,6 +17,10 @@ def dfs(graph, start, visited=None):
     return visited
 
 def dfs_path(graph, start, goal):
+    """
+    Uses DFS to find a path in `graph` between `start` and `goal`.
+    Sourced from Dr. Hu's lecture notes
+    """
     stack = [(start, [start])]
     visited = set()
     while stack:
@@ -23,6 +31,20 @@ def dfs_path(graph, start, goal):
             visited.add(vertex)
             for neighbor in graph.neighbors(vertex):
                 stack.append((neighbor, path + [neighbor]))
+
+def dfs_tpl_order(graph, start, path):
+    """
+    Returns a topological order of the graph starting from `start` node
+    Sourced from Dr. Hu's lecture notes
+    """
+    path = path + [start]
+    # global n
+    for edge in graph.neighbors(start):
+        if edge not in path:
+            path = dfs_tpl_order(graph, edge, path)
+    # print(n, start)
+    # n -= 1
+    return path
 
 def bfs(graph, start):
     visited, queue = set(), [start]

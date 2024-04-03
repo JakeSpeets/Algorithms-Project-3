@@ -47,6 +47,9 @@ def dfs_tpl_order(graph, start, path):
     return path
 
 def bfs(graph, start):
+    """
+    Implements a breadth-first search
+    """
     visited, queue = set(), [start]
     p = set()
     while queue:
@@ -79,39 +82,57 @@ def bfs_path(graph, start, goal):
             visited.add(neighbor)   
     return None 
 
-def dijkstra(graph, initial):
-    visited = {initial: 0}
-    path = {}
-    nodes = set(graph.nodes)
+def dijkstra(graph, start):
+    """
+    Uses Dijkstra's algorithm to find the shortest path tree in a weighted graph
+    Takes in a networkx graph and a starting node and returns a networkx graph
+    """
+    shortest_path_tree = nx.Graph()
+    shortest_path_tree.add_node(start)
+    visited = {start}
+    unvisited = set(graph.nodes) - visited
+    while unvisited:
+        min_edge = None
+        min_weight = float('inf')
+        for node in visited:
+            for neighbor in graph.neighbors(node):
+                if neighbor in visited:
+                    continue
+                weight = graph.get_edge_data(node, neighbor)['weight']
+                if weight < min_weight:
+                    min_edge = (node, neighbor)
+                    min_weight = weight
+        if min_edge is None:
+            break
+        shortest_path_tree.add_edge(min_edge[0], min_edge[1], weight=min_weight)
+        visited.add(min_edge[1])
+        unvisited.remove(min_edge[1])
+    return shortest_path_tree
 
-    while nodes:
-        min_node = None
-        for node in nodes:
-            if node in visited:
-                if min_node is None:
-                    min_node = node
-                elif visited[node] < visited[min_node]:
-                    min_node = node
-                if min_node is None:
-                    break
-                nodes.remove(min_node)
-                current_weight = visited[min_node]
-                for edge in graph.edges[min_node]:
-                    weight = current_weight + graph.distance[(min_node, edge)]
-                if edge not in visited or weight < visited[edge]:
-                    visited[edge] = weight
-                    path[edge] = min_node
-    return visited, path
 
-def kruskal(graph):
+def prim(graph, start):
+    """
+    Uses Prim's algorithm to find the minimum spanning tree in a weighted graph
+    Takes in a networkx graph and a starting node and returns a networkx graph
+    """
     mst = nx.Graph()
-    edges = list(graph.edges(data=True))
-    # Lambda function to sort edges by weight
-    edges.sort(key=lambda x: x[2]['weight'])
-    # The Functionterates over the sorted list of edges. For each edge, it checks if 
-    # adding that edge to the MST would create a cycle.
-    for edge in edges:
-        if nx.has_path(mst, edge[0], edge[1]):
-            continue
-        mst.add_edge(edge[0], edge[1], weight=edge[2]['weight'])
+    mst.add_node(start)
+    visited = {start}
+    unvisited = set(graph.nodes) - visited
+    while unvisited:
+        min_edge = None
+        min_weight = float('inf')
+        for node in visited:
+            for neighbor in graph.neighbors(node):
+                if neighbor in visited:
+                    continue
+                weight = graph.get_edge_data(node, neighbor)['weight']
+                if weight < min_weight:
+                    min_edge = (node, neighbor)
+                    min_weight = weight
+        if min_edge is None:
+            break
+        mst.add_edge(min_edge[0], min_edge[1], weight=min_weight)
+        visited.add(min_edge[1])
+        unvisited.remove(min_edge[1])
     return mst

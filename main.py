@@ -10,14 +10,14 @@ This project implements and tests graph algorithms to solve the following proble
   then represent the meta graph as a directed acyclic graph and linearize it.
 3.
 - Use Dijkstra's algorithm to produce the shortest path tree for a weighted directed graph.
-- Produce a minimum spanning tree for a weighted directed graph using Kruskal's algorithm.
+- Produce a minimum spanning tree for a weighted directed graph using Prim's algorithm.
 
 The project uses the NetworkX library to represent graphs.
 The following graph algorithms will be implemented in algos.py:
 - Breadth-first search (BFS)
 - Depth-first search (DFS)
 - Dijkstra's algorithm
-- Kruskal's algorithm
+- Prim's algorithm
 
 """
 
@@ -121,11 +121,11 @@ def main():
         print(components[key])
     print("Number of nodes in each group:", count)
         
-    # Creating a meta graph of strongly connected components
+    # Creating a meta-graph of strongly connected components
     meta_graph, scc_map = create_meta_graph(graph, components)
     print("\nNodes representing each strongly connected component:")
     print(scc_map)
-    print("Meta graph of strongly connected components:")
+    print("Meta-graph of strongly connected components:")
     print(meta_graph.edges())
     
     # Linearize the directed acyclic graph
@@ -133,12 +133,38 @@ def main():
     print("\nLinearized directed acyclic graph:")
     print(linearized)
         
-    # Creating a weighted directed graph
+    # Creating a weighted undirected graph
+    graph = nx.Graph()
+    graph.add_edge('A', 'B', weight=22)
+    graph.add_edge('A', 'C', weight=9)
+    graph.add_edge('A', 'D', weight=12)
+    graph.add_edge('B', 'C', weight=35)
+    graph.add_edge('C', 'D', weight=4)
+    graph.add_edge('B', 'H', weight=34)
+    graph.add_edge('B', 'F', weight=36)
+    graph.add_edge('F', 'H', weight=24)
+    graph.add_edge('C', 'F', weight=25)
+    graph.add_edge('C', 'E', weight=65)
+    graph.add_edge('D', 'E', weight=33)
+    graph.add_edge('E', 'G', weight=23)
+    graph.add_edge('E', 'F', weight=18)
+    graph.add_edge('D', 'I', weight=30)
+    graph.add_edge('F', 'G', weight=39)
+    graph.add_edge('G', 'I', weight=21)
+    graph.add_edge('H', 'I', weight=19)
+    graph.add_edge('G', 'H', weight=25)
+    
+    print("\nWeighted directed graph created:")
         
     # Using Dijkstra's algorithm to find the shortest path tree
+    shortest_path_tree = algos.dijkstra(graph, 'A')
+    print("\nShortest path tree found using Dijkstra's algorithm:")
+    print(shortest_path_tree.edges())
         
-    # Using Kruskal's algorithm to find the minimum spanning tree
-    
+    # Using Prim's algorithm to find the minimum spanning tree
+    mst = algos.prim(graph, 'F')
+    print("\nMinimum spanning tree found using Prim's algorithm:")
+    print(mst.edges())
 
 
 def dfs_connected_components(graph):
